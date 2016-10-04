@@ -1,0 +1,45 @@
+diff --git a/test/control-component-spec.js b/test/control-component-spec.js
+index 9a47b7e..9a5d992 100644
+--- a/test/control-component-spec.js
++++ b/test/control-component-spec.js
+@@ -1213,7 +1213,11 @@ Object.keys(testContexts).forEach((testKey) => {
+     });
+ 
+     describe('changeAction prop', () => {
+-      const initialState = getInitialState({ foo: '' });
++      console.log('-----')
++      const initialState = getInitialState({
++        foo: '',
++        checked: false,
++      });
+       const reducer = modelReducer('test', initialState);
+       const store = testCreateStore({
+         test: reducer,
+@@ -1247,6 +1251,27 @@ Object.keys(testContexts).forEach((testKey) => {
+           get(store.getState().test, 'foo'),
+           'testing');
+       });
++
++      it('should execute the custom change action (checkbox)', () => {
++        let customChanged = false;
++
++        const field = TestUtils.renderIntoDocument(
++          <Provider store={store}>
++            <Control.checkbox
++              model="test.checked"
++              changeAction={(model, value) => {
++                customChanged = true;
++              }}
++            />
++          </Provider>
++        );
++
++        const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
++
++        TestUtils.Simulate.change(control);
++
++        assert.isTrue(customChanged);
++      });
+     });
+ 
+     describe('event handlers on control', () => {
